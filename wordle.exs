@@ -9,7 +9,11 @@ defmodule Wordle do
 
     String.split(my_big_string)
     |> Enum.random()
-    # |> IO.inspect()
+    |> IO.inspect()
+  end
+
+  def make_guess(answer, 0) do
+    IO.puts("Sorry, it was #{answer}")
   end
 
   def make_guess(answer, remaining_guesses) do
@@ -38,11 +42,6 @@ defmodule Wordle do
     end
   end
 
-  #change this to an alt of make_guess
-  def compare(_guess, answer, remaining_guesses) when remaining_guesses == 0 do
-    IO.puts("Sorry, it was #{answer}")
-  end
-
   def compare(guess, answer, _remaining_guesses) when guess == answer do
     IO.puts("You win!")
   end
@@ -62,13 +61,9 @@ defmodule Wordle do
       end
     end)
     |> Enum.join("")
-    |> display(guess)
+    |> then(fn hint -> IO.puts("#{hint}\n#{guess}\n#{hint}") end)
 
     make_guess(answer, remaining_guesses-1)
-  end
-
-  def display(hint, guess) do
-    IO.puts("#{hint}\n#{guess}\n#{hint}")
   end
 end
 
