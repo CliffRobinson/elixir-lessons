@@ -49,17 +49,16 @@ defmodule Wordle do
   def compare(guess, answer, remaining_guesses) do
     Enum.zip(String.graphemes(guess), String.graphemes(answer))
     |> Enum.map(fn {guess_letter, answer_letter} ->
-      # take a trip to conde naste
-      if guess_letter == answer_letter do
-        "#"
-      else
-        if String.contains?(answer, guess_letter) do
-          "!"
-        else
-          "_"
+        cond do
+          guess_letter == answer_letter ->
+            "#"
+          String.contains?(answer, guess_letter) ->
+            "!"
+          true ->
+            "-"
         end
       end
-    end)
+      )
     |> Enum.join("")
     |> then(fn hint -> IO.puts("#{hint}\n#{guess}\n#{hint}") end)
 
