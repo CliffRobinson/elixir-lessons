@@ -9,12 +9,7 @@ defmodule TTT.Client do
   end
 
   def loop_acceptor(server_pid, socket) do
-    # IO.inspect("Client loooping, server_pid:")
-    # IO.inspect(server_pid)
-    # IO.inspect("Socket:")
-    # IO.inspect(socket)
     {:ok, client} = :gen_tcp.accept(socket)
-    # IO.puts("gen_tcp OK!!")
     spawn(fn -> register(server_pid, client) end)
     loop_acceptor(server_pid, socket)
   end
@@ -116,9 +111,6 @@ end
 
 defmodule TTT.Server do
   def start do
-    # TODO: switch case/cond for different atoms recieved from client
-    # function for each:
-    # receive: :register => :your_turn, :error
     IO.puts("SERVER STARTING!!!!")
     initial_state = [nil, nil, nil, nil, nil, nil, nil, nil, nil]
 
