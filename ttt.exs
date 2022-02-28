@@ -1,7 +1,10 @@
 defmodule TTT.Client do
   def start(server_pid, port) do
     IO.puts("Client starting!")
-    {:ok, socket} = :gen_tcp.listen(port, [:binary, packet: :line, active: false, reuseaddr: true])
+
+    {:ok, socket} =
+      :gen_tcp.listen(port, [:binary, packet: :line, active: false, reuseaddr: true])
+
     loop_acceptor(server_pid, socket)
   end
 
@@ -62,7 +65,9 @@ defmodule TTT.Client do
     |> String.trim()
     |> Integer.parse()
     |> case do
-      {number, ""} -> number
+      {number, ""} ->
+        number
+
       _ ->
         puts("Not a valid number", socket)
         ask_for_position(socket)
@@ -115,54 +120,81 @@ defmodule TTT.Server do
     # function for each:
     # receive: :register => :your_turn, :error
     IO.puts("SERVER STARTING!!!!")
-    initial_state = [nil, nil, nil,nil, nil, nil,nil, nil, nil,]
+    initial_state = [nil, nil, nil, nil, nil, nil, nil, nil, nil]
 
-    spawn(fn -> looper(initial_state) end)
+    spawn(fn -> looper(initial_state, 0) end)
   end
 
-  def looper(board, a \\ nil, b \\ nil ) do
+  def is_game_won?(board) do
+    [p0, p1, p2, p3, p4, p5, p6, p7, p8] = board
+
+    cond do
+      p0 && p0 == p1 && p1 == p2 -> true
+      p3 && p3 == p4 && p4 == p5 -> true
+      p6 && p6 == p7 && p7 == p8 -> true
+      p0 && p0 == p3 && p3 == p6 -> true
+      p1 && p1 == p4 && p4 == p7 -> true
+      p2 && p2 == p5 && p5 == p8 -> true
+      p0 && p0 == p4 && p4 == p8 -> true
+      p2 && p2 == p4 && p4 == p6 -> true
+
+      true ->
+        false
+    end
+  end
+
+  def looper(board, move_count, a \\ nil, b \\ nil) do
     IO.puts("Server Looping!")
+    IO.puts("move_count is #{move_count}")
     receive do
-      {client_pid, :register } ->
+      {client_pid, :register} ->
         IO.puts("received a register atom!!, client_pid is:")
         IO.inspect(client_pid)
+
         cond do
           a == nil ->
             IO.puts("first player registered!")
-            looper(board, client_pid, nil)
+            looper(board, 0, client_pid, nil)
 
           a != nil && b == nil ->
             IO.puts("second player registered!")
-            #send_play
+            # send_play
             send(a, {:your_turn, board})
-            looper(board, a, client_pid)
+            looper(board, 0, a, client_pid)
 
           true ->
             IO.puts("Game oversubscribed :-(")
             send(client_pid, {:error, :game_full})
-            looper(board, a, b)
-          end
+            looper(board, move_count, a, b)
+        end
+
       {player, {:play, play_num}} ->
-        #check if position has been played to
-        if (Enum.at(board, play_num) != nil) do
-          #if it has, return :error and ask for input again
+        # check if position has been played to
+        if Enum.at(board, play_num) != nil do
+          # if it has, return :error and ask for input again
           send(player, {:error, :invalid_position})
-          looper(board, a, b)
+          looper(board, move_count, a, b)
         else
-          #if it hasn't, call looper with an updated board, MAYBE instruct client that it's the next player's turn
-
-
-
           symbol = if player == a, do: 1, else: 0
           next_player = if player == a, do: b, else: a
 
           new_board = List.replace_at(board, play_num, symbol)
           send(player, {:accepted, new_board})
-          send(next_player, {:your_turn, new_board})
-          looper(new_board, a, b)
+          cond do
+            is_game_won?(new_board) ->
+              send(a, {:game_complete, new_board})
+              send(b, {:game_complete, new_board})
+            move_count == 8 ->
+              IO.puts("last move taken!!!")
+              send(a, {:game_complete, new_board})
+              send(b, {:game_complete, new_board})
+            true ->
+              send(next_player, {:your_turn, new_board})
+              looper(new_board, move_count + 1, a, b)
+          end
         end
+      end
     end
-  end
 end
 
 server_pid = TTT.Server.start()
