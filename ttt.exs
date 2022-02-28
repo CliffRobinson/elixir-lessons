@@ -104,7 +104,8 @@ end
 
 defmodule TTT.Server do
   def start do
-    # TODO
+    # TODO: switch case/cond for different atoms recieved from client
+    #function for each
   end
 end
 
