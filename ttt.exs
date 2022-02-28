@@ -1,16 +1,23 @@
 defmodule TTT.Client do
   def start(server_pid, port) do
+    IO.puts("Client starting!")
     {:ok, socket} = :gen_tcp.listen(port, [:binary, packet: :line, active: false, reuseaddr: true])
     loop_acceptor(server_pid, socket)
   end
 
   def loop_acceptor(server_pid, socket) do
+    IO.inspect("Client loooping, server_pid:")
+    IO.inspect(server_pid)
+    IO.inspect("Socket:")
+    IO.inspect(socket)
     {:ok, client} = :gen_tcp.accept(socket)
+    IO.puts("gen_tcp OK!!")
     spawn(fn -> register(server_pid, client) end)
     loop_acceptor(server_pid, socket)
   end
 
   def register(server_pid, socket) do
+    IO.puts("Client Registering!")
     send(server_pid, {self(), :register})
 
     puts("Waiting for other player...", socket)
@@ -105,8 +112,44 @@ end
 defmodule TTT.Server do
   def start do
     # TODO: switch case/cond for different atoms recieved from client
-    #function for each
+    # function for each:
+    # receive: :register => :your_turn, :error
+    IO.puts("SERVER STARTING!!!!")
+    initial_state = ["", "", "","", "", "","", "", "",]
+
+    spawn(fn -> looper(initial_state) end)
   end
+
+  def looper(board, a \\ nil, b \\ nil ) do
+    IO.puts("Server Looping!")
+    receive do
+      {client_pid, :register } ->
+        IO.puts("received a register atom!!, client_pid is:")
+        IO.inspect(client_pid)
+        # if (a == nil), do: on_register(board, client_pid, nil), else: on_register(board, a, client_pid)
+        cond do
+          a == nil -> on_register(board, client_pid, nil)
+
+          a != nil && b == nil -> on_register(board, a, client_pid)
+
+          true -> send(client_pid, {:error, :game_full})
+        end
+
+    end
+  end
+
+  def on_register(board, a, nil) do #corresponds to first registrant
+    IO.puts("first player registered, PID is:")
+    IO.inspect(a)
+    looper(board, a, nil)
+  end
+
+  def on_register(board, a, b) do #corresponds to second registrant
+    IO.puts("second player registered, PID is:")
+    IO.inspect(b)
+    looper(board, a, b)
+  end
+
 end
 
 server_pid = TTT.Server.start()
