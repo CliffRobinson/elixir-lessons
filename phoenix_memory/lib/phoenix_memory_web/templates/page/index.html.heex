@@ -1,14 +1,5 @@
 <section class="phx-hero">
   <h1><%= gettext "Welcome to %{name}!", name: "Phoenix" %></h1>
-  <p>Peace of mind from prototype to production</p>
-  <h3> Here's what I got from the server </h3>
-  <p> <%= @done_thing %></p>
-
-  <h3> Want to get a thing? </h3>
-  <%= form_tag("/") do %>
-    <input name="thing"/>
-    <input type="submit" />
-  <% end %>
 
   <h3> You have <%= @guesses %> guesses left!! </h3>
   
@@ -18,5 +9,11 @@
         <span> <%= index %>: <%= if(bool, do: letter, else: "???") %> </span>
       <% end %>
     </div>
+  <% end %>
+
+    <%= form_tag("/guess") do %>
+    <input name="guessA"/>
+    <input name="guessB" />
+    <input type="submit" />
   <% end %>
 </section>

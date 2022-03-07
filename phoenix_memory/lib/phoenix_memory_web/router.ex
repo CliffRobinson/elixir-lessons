@@ -19,6 +19,7 @@ defmodule PhoenixMemoryWeb.Router do
 
     get "/", PageController, :index
     post "/", PageController, :post_thing
+    post "/guess", PageController, :post_guess
   end
 
   # Other scopes may use custom stacks.

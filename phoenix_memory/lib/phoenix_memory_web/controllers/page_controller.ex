@@ -17,4 +17,10 @@ defmodule PhoenixMemoryWeb.PageController do
     PhoenixMemory.MemoryServer.get_a_thing(thing)
     redirect(conn, to: "/")
   end
+
+  def post_guess(conn, arg) do
+    PhoenixMemory.MemoryServer.post_guess(arg)
+
+    redirect(conn, to: "/")
+  end
 end
