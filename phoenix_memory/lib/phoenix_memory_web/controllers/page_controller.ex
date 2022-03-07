@@ -2,14 +2,14 @@ defmodule PhoenixMemoryWeb.PageController do
   use PhoenixMemoryWeb, :controller
 
   def index(conn, _params) do
-    done_thing = PhoenixMemory.MemoryServer.do_a_thing()
+    # done_thing = PhoenixMemory.MemoryServer.do_a_thing()
 
     %{:board => board, :guesses => guesses} = PhoenixMemory.MemoryServer.get_state()
 
     conn
     |> assign(:guesses, guesses)
     |> assign(:board, Enum.chunk_every(board,5))
-    |> assign(:done_thing, done_thing)
+    # |> assign(:done_thing, done_thing)
     |> render("index.html")
   end
 
