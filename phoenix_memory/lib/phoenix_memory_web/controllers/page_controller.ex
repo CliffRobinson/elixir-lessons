@@ -8,7 +8,7 @@ defmodule PhoenixMemoryWeb.PageController do
 
     conn
     |> assign(:guesses, guesses)
-    |> assign(:board, board)
+    |> assign(:board, Enum.chunk_every(board,5))
     |> assign(:done_thing, done_thing)
     |> render("index.html")
   end

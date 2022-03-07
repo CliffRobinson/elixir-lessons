@@ -49,7 +49,7 @@ defmodule PhoenixMemory.MemoryServer do
       "A","A","B","B","C","C","D","D","E","E","F","F","G","G","H","H","I","I","J","J"
     ]
     |> Enum.shuffle()
-    |> Enum.with_index(fn el, index -> {index + 1, false, el} end)
+    |> Enum.with_index(fn el, index -> {index + 1, true, el} end)
 
     %{:guesses => 30, :board => board}
   end
