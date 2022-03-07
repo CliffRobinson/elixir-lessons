@@ -10,11 +10,6 @@ defmodule PhoenixMemoryWeb.PageController do
     |> render("index.html")
   end
 
-  # def post_thing(conn, %{ "thing" => thing }) do
-  #   PhoenixMemory.MemoryServer.get_a_thing(thing)
-  #   redirect(conn, to: "/")
-  # end
-
   def post_guess(conn, arg) do
     PhoenixMemory.MemoryServer.post_guess(arg)
 
