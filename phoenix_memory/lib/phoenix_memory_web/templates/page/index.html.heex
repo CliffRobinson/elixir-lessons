@@ -11,4 +11,11 @@
   <% end %>
 
   <h3> You have <%= @guesses %> guesses left!! </h3>
+
+  <% IO.puts("Hello I am io puts, what happens?") %>
+  <% IO.inspect("Inspect, same q") %>
+  
+  <%= for {index, bool, letter} <- @board do %>
+    <p> <%= index %>: <%= if(bool, do: letter, else: "???") %> </p>
+  <% end %>
 </section>
