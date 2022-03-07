@@ -2,7 +2,7 @@
   <h1><%= gettext "Welcome to %{name}!", name: "Phoenix" %></h1>
 
   <h3> You have <%= @guesses %> guesses left!! </h3>
-  
+  <h4> <%= @message %> </h4>
   <%= for row <- @board do %>
     <div>
       <%= for {index, bool, letter} <- row do %>
