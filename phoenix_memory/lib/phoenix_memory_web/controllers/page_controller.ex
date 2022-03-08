@@ -6,7 +6,7 @@ defmodule PhoenixMemoryWeb.PageController do
 
     # message = "initial defaul"
 
-    IO.inspect(params)
+    IO.inspect(board)
 
     message = if(Map.get(params, "message"), do: Map.get(params, "message"), else: "Make your first guess!")
 
@@ -19,8 +19,6 @@ defmodule PhoenixMemoryWeb.PageController do
 
   @spec post_guess(Plug.Conn.t(), map) :: Plug.Conn.t()
   def post_guess(conn, arg) do
-    IO.puts("arg to post_guess")
-    IO.inspect(arg)
     {guess_result, {first_index, first_letter, second_index, second_letter}} = PhoenixMemory.MemoryServer.post_guess(arg)
 
     message = cond do

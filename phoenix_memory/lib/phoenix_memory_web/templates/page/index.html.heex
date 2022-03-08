@@ -14,6 +14,6 @@
     <%= form_tag("/guess") do %>
     <input name="guessA"/>
     <input name="guessB" />
-    <input type="submit" />
+    <input type="submit" disabled={@guesses == 0}/>
   <% end %>
 </section>

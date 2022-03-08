@@ -55,9 +55,9 @@ defmodule PhoenixMemory.MemoryServer do
     new_state = %{:board => new_board, :guesses => (guesses - 1) }
 
     if (game_won?(new_board)) do
-      {:reply, {:success, {first_index, first_letter, second_index, second_letter}}, new_state}
+      {:reply, {:victory, {first_index, first_letter, second_index, second_letter}}, Map.put(new_state, :guesses, 0)}
     else
-      {:reply, {:victory, {first_index, first_letter, second_index, second_letter}}, new_state}
+      {:reply, {:success, {first_index, first_letter, second_index, second_letter}}, new_state}
     end
 
 
@@ -70,7 +70,7 @@ defmodule PhoenixMemory.MemoryServer do
     {:reply,{:fail, {first_index, first_letter, second_index, second_letter}}, new_state}
   end
 
-  defp game_won?(board) do
+  def game_won?(board) do
     Enum.reduce(board, true, fn ({_index, bool, _letter}, result) ->
       if bool, do: result, else: false
     end )
