@@ -27,14 +27,37 @@ defmodule PhoenixMemory.MemoryServer do
 
   def handle_call({:post_guess, string_first_index, string_second_index}, _from, state) do
     %{:board => board} = state
-    {first_index, _} = Integer.parse(string_first_index)
-    {second_index, _} = Integer.parse(string_second_index)
+    first_index = parse_input(string_first_index)
+    second_index  = parse_input(string_second_index)
 
-    first_letter = get_letter(first_index, board)
-    second_letter = get_letter(second_index, board)
-    match = first_letter == second_letter
+    if ( first_index == :invalid || second_index == :invalid) do
+      # unhappy path
+      # better way to do this?
+      {:reply, {:invalid, {nil,nil,nil,nil}}, state}
+    else
+      # happy path
+      first_letter = get_letter(first_index, board)
+      second_letter = get_letter(second_index, board)
+      match = first_letter == second_letter
 
-    check_guess(match, {first_index, first_letter, second_index, second_letter}, state)
+      check_guess(match, {first_index, first_letter, second_index, second_letter}, state)
+    end
+  end
+
+  def parse_input(string) when is_binary(string) do
+    parse_input(Integer.parse(string))
+  end
+
+  def parse_input(:error) do
+    :invalid
+  end
+
+  def parse_input({index, _}) do
+    if (index > 0 && index < 21) do
+      index
+    else
+      :invalid
+    end
   end
 
   defp get_letter(guess_index, state) do
